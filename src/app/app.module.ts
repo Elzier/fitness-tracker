@@ -12,7 +12,9 @@ import { NewTrainingComponent } from './training/new-training/new-training.compo
 import { PastTrainingsComponent } from './training/past-trainings/past-trainings.component';
 import { WelcomeComponent } from './welcome/welcome.component'
 import { FlexLayoutModule } from '@angular/flex-layout'
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
+import { HeaderComponent } from './navigation/header/header.component'
 
 
 
@@ -25,6 +27,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
     NewTrainingComponent,
     PastTrainingsComponent,
     WelcomeComponent,
+    SidenavListComponent,
+    HeaderComponent,
   ],
   imports: [
     BrowserModule,

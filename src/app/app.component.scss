@@ -6,27 +6,6 @@ mat-sidenav {
   width: 250px;
 }
 
-.navigation {
-  &__items {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    .navigation__item {
-      &:hover {
-        color: grey;
-      }
-    }
-  }
-}
-
-a {
-  text-decoration: none;
-  color: white;
-  &:hover {
-    color: grey;
-  }
-}
-
 .nav-caption {
   display: inline-block;
   margin-left: 8px;

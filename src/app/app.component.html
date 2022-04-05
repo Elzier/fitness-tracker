@@ -1,40 +1,9 @@
 <mat-sidenav-container>
   <mat-sidenav #sidenav role="navigation">
-    <mat-nav-list class="navigation__items">
-      <a mat-list-item routerLink="/signup" class="navigation__item" (click)="sidenav.close()">
-        <mat-icon>face</mat-icon>
-        <span class="nav-caption">Signup</span>
-      </a>
-      <a mat-list-item routerLink="/login" class="navigation__item" (click)="sidenav.close()">
-        <mat-icon>input</mat-icon>
-        <span class="nav-caption">Login</span>
-      </a>
-      <a mat-list-item routerLink="/training" class="navigation__item" (click)="sidenav.close()">
-        <mat-icon>fitness_center</mat-icon>
-        <span class="nav-caption">Training</span>
-      </a>
-      <mat-list-item class="navigation__item">
-        <button mat-icon-button>
-          <mat-icon>eject</mat-icon>
-          <span class="nav-caption">Logout</span>
-        </button>
-      </mat-list-item>
-    </mat-nav-list>
+    <app-sidenav-list (sidebarCloseEvent)="sidenav.close()"></app-sidenav-list>
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <button mat-button (click)="sidenav.toggle()" fxLayout fxHide.gt-xs>
-        <mat-icon>menu</mat-icon>
-      </button>
-      <div><a routerLink="/">LOGO</a></div>
-      <nav class="navigation" fxFlex fxLayout fxLayoutAlign="flex-end" fxHide.xs>
-        <ul class="navigation__items" fxLayout fxLayoutGap="12px">
-          <li class="navigation__item"><a routerLink="/signup">Signup</a></li>
-          <li class="navigation__item"><a routerLink="/login">Login</a></li>
-          <li class="navigation__item"><a routerLink="/Training">Training</a></li>
-        </ul>
-      </nav>
-    </mat-toolbar>
+    <app-header (sidenavToggle)="sidenav.toggle()"></app-header>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
