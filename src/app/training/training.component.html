@@ -1,8 +1,12 @@
-<mat-tab-group mat-align-tabs="center">
+<mat-tab-group mat-align-tabs="center" *ngIf="!onGoingTraining; else currentTraining">
   <mat-tab label="New Exercise">
-    <app-new-training></app-new-training>
+    <app-new-training (startTraining)="onGoingTraining = true"></app-new-training>
   </mat-tab>
   <mat-tab label="Past Exercises">
     <app-past-trainings></app-past-trainings>
   </mat-tab>
 </mat-tab-group>
+<ng-template #currentTraining>
+  <app-current-training (closeDialog)="onGoingTraining = false"></app-current-training>
+</ng-template>
+

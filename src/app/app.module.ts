@@ -14,7 +14,9 @@ import { WelcomeComponent } from './welcome/welcome.component'
 import { FlexLayoutModule } from '@angular/flex-layout'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
-import { HeaderComponent } from './navigation/header/header.component'
+import { HeaderComponent } from './navigation/header/header.component';
+import { CurrentTrainingComponent } from './training/current-training/current-training.component'
+import { StopTrainingComponent } from './training/current-training/stop-training.component'
 
 
 
@@ -29,6 +31,8 @@ import { HeaderComponent } from './navigation/header/header.component'
     WelcomeComponent,
     SidenavListComponent,
     HeaderComponent,
+    CurrentTrainingComponent,
+    StopTrainingComponent
   ],
   imports: [
     BrowserModule,
