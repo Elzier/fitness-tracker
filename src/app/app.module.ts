@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core'
 import { BrowserModule } from '@angular/platform-browser'
 import { AppRoutingModule } from './app-routing.module'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { MaterialModule } from './material.module'
+import { MaterialModule } from './shared/material.module'
 
 import { AppComponent } from './app.component'
 import { SignupComponent } from './auth/signup/signup.component'
@@ -17,6 +17,7 @@ import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.com
 import { HeaderComponent } from './navigation/header/header.component';
 import { CurrentTrainingComponent } from './training/current-training/current-training.component'
 import { StopTrainingComponent } from './training/current-training/stop-training.component'
+import { AuthService } from './shared/services/auth.service'
 
 
 
@@ -43,7 +44,7 @@ import { StopTrainingComponent } from './training/current-training/stop-training
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
