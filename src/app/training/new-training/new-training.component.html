@@ -1,24 +1,20 @@
 <section class="new-training" fxLayoutAlign="center">
-  <mat-card fxFlex.xs="90%" fxFlex="400px">
-    <mat-card-title>Time to start a workout!</mat-card-title>
-    <mat-card-content>
-      <mat-form-field appearance="fill">
-        <mat-label>Favorite food</mat-label>
-        <mat-select>
-          <mat-option value="Chinazes">
-            Chinazes
-          </mat-option>
-          <mat-option value="Chinazes2">
-            Chinazes2
-          </mat-option>
-          <mat-option value="Chinazes3">
-            Chinazes3
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-button (click)="onStartTraining()">Start</button>
-    </mat-card-actions>
-  </mat-card>
+  <form [formGroup]="form" (ngSubmit)="onStartTraining()">
+    <mat-card fxFlex.xs="90%" fxFlex="400px">
+      <mat-card-title>Time to start a workout!</mat-card-title>
+      <mat-card-content>
+        <mat-form-field appearance="fill">
+          <mat-label>Favorite food</mat-label>
+          <mat-select formControlName="exerciseId">
+            <mat-option *ngFor="let exercise of exercises" [value]="exercise.id">
+              {{exercise.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button [disabled]="form.invalid">Start</button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
 </section>
