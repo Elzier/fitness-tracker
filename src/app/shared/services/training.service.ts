@@ -47,6 +47,7 @@ export class TrainingService {
   }
 
   cancelExercise(progress: number) {
+    console.log(progress)
     if (this.runningExercise) {
       this.lastExercises.push({
         ...this.runningExercise,
@@ -58,5 +59,9 @@ export class TrainingService {
     }
     this.runningExercise = null
     this.exerciseChanged.next(null)
+  }
+
+  getLastExercises() {
+    return this.lastExercises.slice()
   }
 }
