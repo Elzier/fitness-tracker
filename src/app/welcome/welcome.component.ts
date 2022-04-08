@@ -6,10 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./welcome.component.scss']
 })
 export class WelcomeComponent implements OnInit {
-  currentCount: number = 1
   constructor() { }
 
   ngOnInit(): void {
-
   }
 }
