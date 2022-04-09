@@ -47,16 +47,21 @@ export class TrainingService {
   }
 
   cancelExercise(progress: number) {
+    console.log(progress)
     if (this.runningExercise) {
       this.lastExercises.push({
         ...this.runningExercise,
         date: new Date(),
         state: 'cancelled',
-        duration: this.runningExercise.duration / 100 * progress,
-        calories: this.runningExercise.calories / 100 * progress
+        duration: +((this.runningExercise.duration / 100 * progress).toFixed(2)),
+        calories: +((this.runningExercise.calories / 100 * progress).toFixed(2))
       })
     }
     this.runningExercise = null
     this.exerciseChanged.next(null)
+  }
+
+  getLastExercises() {
+    return this.lastExercises.slice()
   }
 }
