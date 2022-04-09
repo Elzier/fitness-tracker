@@ -53,8 +53,8 @@ export class TrainingService {
         ...this.runningExercise,
         date: new Date(),
         state: 'cancelled',
-        duration: this.runningExercise.duration / 100 * progress,
-        calories: this.runningExercise.calories / 100 * progress
+        duration: +((this.runningExercise.duration / 100 * progress).toFixed(2)),
+        calories: +((this.runningExercise.calories / 100 * progress).toFixed(2))
       })
     }
     this.runningExercise = null
