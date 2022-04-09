@@ -9,14 +9,14 @@ import { AuthService } from '../../shared/services/auth.service'
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @Output() sidenavToggle = new EventEmitter<void>()
-  authSub!: Subscription
+  authSub$!: Subscription
   isAuthorized = false
 
 
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.authSub = this.authService.authChange.subscribe(authStatus => {
+    this.authSub$ = this.authService.authChange.subscribe(authStatus => {
       this.isAuthorized = authStatus
     })
   }
@@ -30,6 +30,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.authSub) this.authSub.unsubscribe()
+    if (this.authSub$) this.authSub$.unsubscribe()
   }
 }
