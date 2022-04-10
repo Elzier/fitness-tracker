@@ -14,7 +14,8 @@ export class TrainingComponent implements OnInit, OnDestroy{
   constructor(private trainingService: TrainingService) {}
 
   ngOnInit(): void {
-    this.runningTrainingSub$ = this.trainingService.exerciseChanged.subscribe(exercise => {
+    this.runningTrainingSub$ = this.trainingService.currentExerciseChanged
+      .subscribe(exercise => {
         exercise ? this.onGoingTraining = true : this.onGoingTraining = false
       })
   }

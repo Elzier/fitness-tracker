@@ -21,6 +21,7 @@ import { StopTrainingComponent } from './training/current-training/stop-training
 import { AuthService } from './shared/services/auth.service'
 import { AngularFireModule } from '@angular/fire/compat'
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore'
+import { FirestoreDatePipe } from './shared/pipes/firestoreDate.pipe'
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore'
     SidenavListComponent,
     HeaderComponent,
     CurrentTrainingComponent,
-    StopTrainingComponent
+    StopTrainingComponent,
+    FirestoreDatePipe
   ],
   imports: [
     BrowserModule,

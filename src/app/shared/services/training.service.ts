@@ -2,37 +2,37 @@ import { Injectable } from '@angular/core'
 import { Exercise } from '../models'
 import { map, Subject } from 'rxjs'
 import { AngularFirestore } from '@angular/fire/compat/firestore'
+import firebase from 'firebase/compat/app'
+import Timestamp = firebase.firestore.Timestamp
 
 @Injectable({providedIn: 'root'})
 
 export class TrainingService {
-  exerciseChanged = new Subject<Exercise | null>()
-  exercisesChanged = new Subject<Exercise[]>()
+  currentExerciseChanged = new Subject<Exercise | null>()
+  availableExercisesChanged = new Subject<Exercise[]>()
+  finishedExercisesChanged = new Subject<Exercise[]>()
   private runningExercise: Exercise | null = null
-  private lastExercises: Exercise[] = []
   private availableExercises: Exercise[] = []
 
   constructor(private db: AngularFirestore) {}
 
   fetchAvailableExercises() {
-    this.db.collection('availableExercises').snapshotChanges()
-      .pipe(map(docArray => {
-        return docArray.map(doc => {
-          return {
-            id: doc.payload.doc.id,
-            ...<Object>doc.payload.doc.data()
-          } as Exercise
-        })
+    this.db.collection<Exercise>('availableExercises').snapshotChanges()
+      .pipe(map(documentArray => {
+        return documentArray.map(document => ({
+          id: document.payload.doc.id,
+          ...<Object>document.payload.doc.data()
+        } as Exercise))
       })).subscribe((exercises: Exercise[]) => {
         this.availableExercises = exercises
-        this.exercisesChanged.next(exercises)
+        this.availableExercisesChanged.next(exercises)
     })
   }
 
   selectExercise(selectedExId: string) {
     this.runningExercise = this.availableExercises.find(ex => ex.id === selectedExId) || null
     if (this.runningExercise) {
-      this.exerciseChanged.next({...this.runningExercise})
+      this.currentExerciseChanged.next({...this.runningExercise})
     }
   }
 
@@ -45,31 +45,38 @@ export class TrainingService {
 
   completeExercise() {
     if (this.runningExercise) {
-      this.lastExercises.push({
+      this.postFinishedExerciseToDb({
         ...this.runningExercise,
-        date: new Date(),
+        date: Timestamp.now(),
         state: 'completed'
       })
     }
     this.runningExercise = null
-    this.exerciseChanged.next(null)
+    this.currentExerciseChanged.next(null)
   }
 
   cancelExercise(progress: number) {
     if (this.runningExercise) {
-      this.lastExercises.push({
+      this.postFinishedExerciseToDb({
         ...this.runningExercise,
-        date: new Date(),
+        date: Timestamp.now(),
         state: 'cancelled',
         duration: +((this.runningExercise.duration / 100 * progress).toFixed(2)),
         calories: +((this.runningExercise.calories / 100 * progress).toFixed(2))
       })
     }
     this.runningExercise = null
-    this.exerciseChanged.next(null)
+    this.currentExerciseChanged.next(null)
   }
 
-  getLastExercises() {
-    return this.lastExercises.slice()
+  fetchFinishedExercises() {
+    this.db.collection<Exercise>('finishedExercises').valueChanges()
+      .subscribe((exercises: Exercise[]) => {
+        this.finishedExercisesChanged.next(exercises)
+    })
+  }
+
+  private postFinishedExerciseToDb(exercise: Exercise) {
+    this.db.collection<Exercise>('finishedExercises').add(exercise)
   }
 }

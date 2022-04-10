@@ -4,6 +4,7 @@ import { Exercise } from '../../shared/models'
 import { TrainingService } from '../../shared/services/training.service'
 import { MatSort } from '@angular/material/sort'
 import { MatPaginator } from '@angular/material/paginator'
+import { Subscription } from 'rxjs'
 
 @Component({
   selector: 'app-past-trainings',
@@ -12,13 +13,20 @@ import { MatPaginator } from '@angular/material/paginator'
 })
 export class PastTrainingsComponent implements OnInit, AfterViewInit {
   displayedColumns = ['name', 'duration', 'calories', 'date', 'state']
-  dataSource = new MatTableDataSource<Exercise>(this.trainingService.getLastExercises())
+  dataSource = new MatTableDataSource<Exercise>()
+  lastExercisesChangedSub!: Subscription
 
   @ViewChild(MatSort) sort!: MatSort
   @ViewChild(MatPaginator) paginator!: MatPaginator
   constructor(private trainingService: TrainingService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.lastExercisesChangedSub = this.trainingService.finishedExercisesChanged
+      .subscribe(exercises => {
+        this.dataSource.data = exercises
+      })
+    this.trainingService.fetchFinishedExercises()
+  }
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort

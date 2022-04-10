@@ -24,8 +24,9 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
       exerciseId: [null, Validators.required]
     })
 
-    this.exercisesChangedSub$ = this.trainingService.exercisesChanged.subscribe((exercises: Exercise[]) => {
-      this.exercises = exercises
+    this.exercisesChangedSub$ = this.trainingService.availableExercisesChanged
+      .subscribe((exercises: Exercise[]) => {
+        this.exercises = exercises
     })
     this.trainingService.fetchAvailableExercises()
   }
