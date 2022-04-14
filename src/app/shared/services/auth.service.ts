@@ -1,51 +1,51 @@
-import { AuthData, User } from '../models'
+import { AuthData } from '../models'
 import { Subject } from 'rxjs'
 import { Router } from '@angular/router'
 import { Injectable } from '@angular/core'
+import { AngularFireAuth } from '@angular/fire/compat/auth'
+import { TrainingService } from './training.service'
 
 @Injectable()
 export class AuthService {
-  private user: User | null = null
+  isAuthenticated = false
   authChange = new Subject<boolean>()
 
-  constructor(private router: Router) {
-  }
+  constructor(private router: Router, private fbAuth: AngularFireAuth, private trainingService: TrainingService) {}
 
 
-  login(authData: AuthData) {
-    this.user = {
-      email: authData.email,
-      userId: Math.round(Math.random() * 10).toString()
+  async login(authData: AuthData) {
+    try {
+      await this.fbAuth.signInWithEmailAndPassword(authData.email, authData.password)
+      this.authSuccessfully()
+    } catch (e) {
+      console.error(e)
     }
     this.authSuccessfully()
   }
 
-  registerUser(authData: AuthData) {
-    this.user = {
-      email: authData.email,
-      userId: Math.round(Math.random() * 10).toString()
+  async registerUser(authData: AuthData) {
+    try {
+      await this.fbAuth.createUserWithEmailAndPassword(authData.email, authData.password)
+      this.authSuccessfully()
+    } catch (e) {
+      console.error(e)
     }
-    this.authSuccessfully()
   }
 
-  logout() {
-    this.user = null
+  isAuth() {
+    return this.isAuthenticated
+  }
+
+  async logout() {
+    this.trainingService.cancelAllSubs()
+    await this.fbAuth.signOut()
+    this.isAuthenticated = false
     this.authChange.next(false)
     this.router.navigate(['/login'])
   }
 
-  getUser(): User | null {
-    if (this.user) {
-      return {...this.user}
-    }
-    return null
-  }
-
-  isAuth(): boolean {
-    return this.user !== null
-  }
-
   private authSuccessfully() {
+    this.isAuthenticated = true
     this.authChange.next(true)
     this.router.navigate(['/training'])
   }

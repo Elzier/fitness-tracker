@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Exercise } from '../models'
-import { map, Subject } from 'rxjs'
+import { map, Subject, Subscription } from 'rxjs'
 import { AngularFirestore } from '@angular/fire/compat/firestore'
 import firebase from 'firebase/compat/app'
 import Timestamp = firebase.firestore.Timestamp
@@ -13,11 +13,13 @@ export class TrainingService {
   finishedExercisesChanged = new Subject<Exercise[]>()
   private runningExercise: Exercise | null = null
   private availableExercises: Exercise[] = []
+  private trainingsSubs$: Subscription[] = []
 
   constructor(private db: AngularFirestore) {}
 
   fetchAvailableExercises() {
-    this.db.collection<Exercise>('availableExercises').snapshotChanges()
+    this.trainingsSubs$.push(
+      this.db.collection<Exercise>('availableExercises').snapshotChanges()
       .pipe(map(documentArray => {
         return documentArray.map(document => ({
           id: document.payload.doc.id,
@@ -26,7 +28,8 @@ export class TrainingService {
       })).subscribe((exercises: Exercise[]) => {
         this.availableExercises = exercises
         this.availableExercisesChanged.next(exercises)
-    })
+        })
+    )
   }
 
   selectExercise(selectedExId: string) {
@@ -70,10 +73,14 @@ export class TrainingService {
   }
 
   fetchFinishedExercises() {
-    this.db.collection<Exercise>('finishedExercises').valueChanges()
+    this.trainingsSubs$.push(this.db.collection<Exercise>('finishedExercises').valueChanges()
       .subscribe((exercises: Exercise[]) => {
         this.finishedExercisesChanged.next(exercises)
-    })
+    }))
+  }
+
+  cancelAllSubs() {
+    this.trainingsSubs$.forEach(sub => sub.unsubscribe())
   }
 
   private postFinishedExerciseToDb(exercise: Exercise) {

@@ -22,6 +22,7 @@ import { AuthService } from './shared/services/auth.service'
 import { AngularFireModule } from '@angular/fire/compat'
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore'
 import { FirestoreDatePipe } from './shared/pipes/firestoreDate.pipe'
+import { AngularFireAuthModule } from '@angular/fire/compat/auth'
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import { FirestoreDatePipe } from './shared/pipes/firestoreDate.pipe'
     FormsModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    AngularFireAuthModule
   ],
   providers: [AuthService],
   bootstrap: [AppComponent]

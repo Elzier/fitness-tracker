@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core'
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { MatTableDataSource } from '@angular/material/table'
 import { Exercise } from '../../shared/models'
 import { TrainingService } from '../../shared/services/training.service'
@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs'
   templateUrl: './past-trainings.component.html',
   styleUrls: ['./past-trainings.component.scss']
 })
-export class PastTrainingsComponent implements OnInit, AfterViewInit {
+export class PastTrainingsComponent implements OnInit, AfterViewInit, OnDestroy {
   displayedColumns = ['name', 'duration', 'calories', 'date', 'state']
   dataSource = new MatTableDataSource<Exercise>()
   lastExercisesChangedSub!: Subscription
@@ -36,5 +36,9 @@ export class PastTrainingsComponent implements OnInit, AfterViewInit {
   filter(event: KeyboardEvent) {
     const searchString = (<HTMLInputElement>event.target).value
     this.dataSource.filter = searchString.trim().toLowerCase()
+  }
+
+  ngOnDestroy() {
+    if (this.lastExercisesChangedSub) this.lastExercisesChangedSub.unsubscribe()
   }
 }
