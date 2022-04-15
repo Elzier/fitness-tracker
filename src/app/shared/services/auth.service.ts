@@ -12,7 +12,11 @@ export class AuthService {
   isAuthenticated = false
   authChange = new Subject<boolean>()
 
-  constructor(private router: Router, private fbAuth: AngularFireAuth, private trainingService: TrainingService) {}
+  constructor(
+    private router: Router,
+    private fbAuth: AngularFireAuth,
+    private trainingService: TrainingService
+  ) {}
 
   initAuthListener() {
     this.fbAuth.authState.subscribe((user: User | null) => {
@@ -53,5 +57,4 @@ export class AuthService {
   async logout() {
     await this.fbAuth.signOut()
   }
-
 }
