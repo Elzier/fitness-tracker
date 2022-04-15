@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core'
+import { environment } from '../environments/environment'
 import { BrowserModule } from '@angular/platform-browser'
 import { AppRoutingModule } from './app-routing.module'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
@@ -18,7 +19,10 @@ import { HeaderComponent } from './navigation/header/header.component';
 import { CurrentTrainingComponent } from './training/current-training/current-training.component'
 import { StopTrainingComponent } from './training/current-training/stop-training.component'
 import { AuthService } from './shared/services/auth.service'
-
+import { AngularFireModule } from '@angular/fire/compat'
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore'
+import { FirestoreDatePipe } from './shared/pipes/firestoreDate.pipe'
+import { AngularFireAuthModule } from '@angular/fire/compat/auth'
 
 
 @NgModule({
@@ -33,7 +37,8 @@ import { AuthService } from './shared/services/auth.service'
     SidenavListComponent,
     HeaderComponent,
     CurrentTrainingComponent,
-    StopTrainingComponent
+    StopTrainingComponent,
+    FirestoreDatePipe
   ],
   imports: [
     BrowserModule,
@@ -42,7 +47,10 @@ import { AuthService } from './shared/services/auth.service'
     MaterialModule,
     FlexLayoutModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
+    AngularFireAuthModule
   ],
   providers: [AuthService],
   bootstrap: [AppComponent]

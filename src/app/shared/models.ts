@@ -1,3 +1,6 @@
+import firebase from 'firebase/compat/app'
+import Timestamp = firebase.firestore.Timestamp
+
 export interface User {
   email: string,
   userId: string
@@ -13,6 +16,6 @@ export interface Exercise {
   name: string,
   duration: number,
   calories: number,
-  date?: Date,
+  date?: Timestamp,
   state?: 'completed' | 'cancelled' | null
 }

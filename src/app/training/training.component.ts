@@ -9,17 +9,18 @@ import { TrainingService } from '../shared/services/training.service'
 })
 export class TrainingComponent implements OnInit, OnDestroy{
   onGoingTraining = false
-  runningTrainingSub!: Subscription
+  runningTrainingSub$!: Subscription
 
   constructor(private trainingService: TrainingService) {}
 
   ngOnInit(): void {
-    this.runningTrainingSub = this.trainingService.exerciseChanged.subscribe(exercise => {
+    this.runningTrainingSub$ = this.trainingService.currentExerciseChanged
+      .subscribe(exercise => {
         exercise ? this.onGoingTraining = true : this.onGoingTraining = false
       })
   }
 
   ngOnDestroy(): void {
-    this.runningTrainingSub.unsubscribe()
+    if (this.runningTrainingSub$) this.runningTrainingSub$.unsubscribe()
   }
 }

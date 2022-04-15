@@ -1,29 +1,41 @@
 import { Injectable } from '@angular/core'
 import { Exercise } from '../models'
-import { Subject } from 'rxjs'
+import { map, Subject, Subscription } from 'rxjs'
+import { AngularFirestore } from '@angular/fire/compat/firestore'
+import firebase from 'firebase/compat/app'
+import Timestamp = firebase.firestore.Timestamp
 
 @Injectable({providedIn: 'root'})
 
 export class TrainingService {
-  runningExercise: Exercise | null = null
-  exerciseChanged = new Subject<Exercise | null>()
-  lastExercises: Exercise[] = []
+  currentExerciseChanged = new Subject<Exercise | null>()
+  availableExercisesChanged = new Subject<Exercise[]>()
+  finishedExercisesChanged = new Subject<Exercise[]>()
+  private runningExercise: Exercise | null = null
+  private availableExercises: Exercise[] = []
+  private trainingsSubs$: Subscription[] = []
 
-  private availableExercises: Exercise[] = [
-    { id: 'crunches', name: 'Crunches', duration: 30, calories: 8 },
-    { id: 'touch-toes', name: 'Touch Toes', duration: 180, calories: 15 },
-    { id: 'side-lunges', name: 'Side Lunges', duration: 120, calories: 18 },
-    { id: 'burpees', name: 'Burpees', duration: 60, calories: 8 }
-  ]
+  constructor(private db: AngularFirestore) {}
 
-  getAvailableExercises(): Exercise[] {
-    return this.availableExercises.slice()
+  fetchAvailableExercises() {
+    this.trainingsSubs$.push(
+      this.db.collection<Exercise>('availableExercises').snapshotChanges()
+      .pipe(map(documentArray => {
+        return documentArray.map(document => ({
+          id: document.payload.doc.id,
+          ...<Object>document.payload.doc.data()
+        } as Exercise))
+      })).subscribe((exercises: Exercise[]) => {
+        this.availableExercises = exercises
+        this.availableExercisesChanged.next(exercises)
+        })
+    )
   }
 
   selectExercise(selectedExId: string) {
     this.runningExercise = this.availableExercises.find(ex => ex.id === selectedExId) || null
     if (this.runningExercise) {
-      this.exerciseChanged.next({...this.runningExercise})
+      this.currentExerciseChanged.next({...this.runningExercise})
     }
   }
 
@@ -36,32 +48,42 @@ export class TrainingService {
 
   completeExercise() {
     if (this.runningExercise) {
-      this.lastExercises.push({
+      this.postFinishedExerciseToDb({
         ...this.runningExercise,
-        date: new Date(),
+        date: Timestamp.now(),
         state: 'completed'
       })
     }
     this.runningExercise = null
-    this.exerciseChanged.next(null)
+    this.currentExerciseChanged.next(null)
   }
 
   cancelExercise(progress: number) {
-    console.log(progress)
     if (this.runningExercise) {
-      this.lastExercises.push({
+      this.postFinishedExerciseToDb({
         ...this.runningExercise,
-        date: new Date(),
+        date: Timestamp.now(),
         state: 'cancelled',
         duration: +((this.runningExercise.duration / 100 * progress).toFixed(2)),
         calories: +((this.runningExercise.calories / 100 * progress).toFixed(2))
       })
     }
     this.runningExercise = null
-    this.exerciseChanged.next(null)
+    this.currentExerciseChanged.next(null)
   }
 
-  getLastExercises() {
-    return this.lastExercises.slice()
+  fetchFinishedExercises() {
+    this.trainingsSubs$.push(this.db.collection<Exercise>('finishedExercises').valueChanges()
+      .subscribe((exercises: Exercise[]) => {
+        this.finishedExercisesChanged.next(exercises)
+    }))
+  }
+
+  cancelAllSubs() {
+    this.trainingsSubs$.forEach(sub => sub.unsubscribe())
+  }
+
+  private postFinishedExerciseToDb(exercise: Exercise) {
+    this.db.collection<Exercise>('finishedExercises').add(exercise)
   }
 }
