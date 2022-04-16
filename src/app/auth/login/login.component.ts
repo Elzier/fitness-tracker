@@ -10,8 +10,8 @@ import { UIService } from '../../shared/services/ui.service'
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  private loaderSub$!: Subscription
   form!: FormGroup
-  loaderSub!: Subscription
   showLoader = false
 
   constructor(
@@ -26,11 +26,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: ['', Validators.required]
     })
 
-    this.loaderSub = this.uiService.loaderStateChanged.subscribe(showOrNot => this.showLoader = showOrNot)
+    this.loaderSub$ = this.uiService.loaderStateChanged.subscribe(showOrNot => this.showLoader = showOrNot)
   }
 
   ngOnDestroy() {
-    this.loaderSub.unsubscribe()
+    if (this.loaderSub$) this.loaderSub$.unsubscribe()
   }
 
   get email() { return this.form.get('email') }

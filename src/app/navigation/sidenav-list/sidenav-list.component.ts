@@ -9,7 +9,7 @@ import { AuthService } from '../../shared/services/auth.service'
 })
 export class SidenavListComponent implements OnInit, OnDestroy {
   @Output() sidebarCloseEvent = new EventEmitter<void>()
-  authSub$!: Subscription
+  private authSub$!: Subscription
   isAuthorized = false
 
   constructor(private authService: AuthService) { }

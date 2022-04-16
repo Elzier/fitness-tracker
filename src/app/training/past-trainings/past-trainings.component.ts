@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs'
 export class PastTrainingsComponent implements OnInit, AfterViewInit, OnDestroy {
   displayedColumns = ['name', 'duration', 'calories', 'date', 'state']
   dataSource = new MatTableDataSource<Exercise>()
-  lastExercisesChangedSub!: Subscription
+  private lastExercisesChangedSub!: Subscription
 
   @ViewChild(MatSort) sort!: MatSort
   @ViewChild(MatPaginator) paginator!: MatPaginator

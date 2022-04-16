@@ -13,12 +13,12 @@ export class SignupComponent implements OnInit, OnDestroy {
   focused = false
   maxDate: Date = new Date()
   showLoader = false
-  loaderSub!: Subscription
+  private loaderSub$!: Subscription
 
   constructor(private authService: AuthService, private uiService: UIService) {}
 
   ngOnInit(): void {
-    this.loaderSub = this.uiService.loaderStateChanged.subscribe(showOrNot => this.showLoader = showOrNot)
+    this.loaderSub$ = this.uiService.loaderStateChanged.subscribe(showOrNot => this.showLoader = showOrNot)
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18)
   }
 
@@ -30,6 +30,6 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.loaderSub.unsubscribe()
+    if (this.loaderSub$) this.loaderSub$.unsubscribe()
   }
 }

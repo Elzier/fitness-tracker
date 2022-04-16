@@ -9,7 +9,7 @@ import { TrainingService } from '../shared/services/training.service'
 })
 export class TrainingComponent implements OnInit, OnDestroy{
   onGoingTraining = false
-  runningTrainingSub$!: Subscription
+  private runningTrainingSub$!: Subscription
 
   constructor(private trainingService: TrainingService) {}
 

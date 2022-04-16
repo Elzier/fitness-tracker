@@ -9,7 +9,7 @@ import { AuthService } from '../../shared/services/auth.service'
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @Output() sidenavToggle = new EventEmitter<void>()
-  authSub$!: Subscription
+  private authSub$!: Subscription
   isAuthorized = false
 
 

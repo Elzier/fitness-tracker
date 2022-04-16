@@ -1,9 +1,9 @@
-<section class="new-training" fxLayoutAlign="center">
+<section class="new-training" fxLayout fxLayoutAlign="center">
   <form [formGroup]="form" (ngSubmit)="onStartTraining()">
     <mat-card fxFlex.xs="90%" fxFlex="400px">
-      <mat-card-title>Time to start a workout!</mat-card-title>
-      <mat-card-content>
-        <mat-form-field appearance="fill">
+      <mat-card-title fxLayoutAlign="center">Time to start a workout!</mat-card-title>
+      <mat-card-content fxLayoutAlign="center">
+        <mat-form-field *ngIf="!showLoader" appearance="fill" fxLayoutAlign="center">
           <mat-label>Favorite food</mat-label>
           <mat-select formControlName="exerciseId">
             <mat-option *ngFor="let exercise of exercises" [value]="exercise.id">
@@ -11,8 +11,9 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
+        <mat-spinner *ngIf="showLoader"></mat-spinner>
       </mat-card-content>
-      <mat-card-actions>
+      <mat-card-actions *ngIf="!showLoader" fxLayoutAlign="center">
         <button mat-button [disabled]="form.invalid">Start</button>
       </mat-card-actions>
     </mat-card>

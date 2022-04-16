@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core'
 import { Exercise } from '../models'
-import { map, Subject, Subscription } from 'rxjs'
+import { concat, map, of, Subject, Subscription, throwError } from 'rxjs'
+import { finalize } from 'rxjs/operators'
 import { AngularFirestore } from '@angular/fire/compat/firestore'
 import firebase from 'firebase/compat/app'
 import Timestamp = firebase.firestore.Timestamp
+import { UIService } from './ui.service'
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { Router } from '@angular/router'
 
 @Injectable({providedIn: 'root'})
 
@@ -15,20 +19,41 @@ export class TrainingService {
   private availableExercises: Exercise[] = []
   private trainingsSubs$: Subscription[] = []
 
-  constructor(private db: AngularFirestore) {}
+  constructor(
+    private db: AngularFirestore,
+    private uiService: UIService,
+    private _snack: MatSnackBar,
+    private router: Router
+  ) {}
 
   fetchAvailableExercises() {
+    this.uiService.showLoader()
+
     this.trainingsSubs$.push(
       this.db.collection<Exercise>('availableExercises').snapshotChanges()
-      .pipe(map(documentArray => {
-        return documentArray.map(document => ({
-          id: document.payload.doc.id,
-          ...<Object>document.payload.doc.data()
-        } as Exercise))
-      })).subscribe((exercises: Exercise[]) => {
-        this.availableExercises = exercises
-        this.availableExercisesChanged.next(exercises)
+      .pipe(
+        map(documentArray => {
+          return documentArray.map(document => ({
+            id: document.payload.doc.id,
+            ...<Object>document.payload.doc.data()
+          } as Exercise))
         })
+      )
+      .subscribe({
+        next: (exercises: Exercise[]) => {
+          this.availableExercises = exercises
+          this.availableExercisesChanged.next(exercises)
+          this.uiService.hideLoader()
+        },
+        error: () => {
+          this.uiService.hideLoader()
+          this._snack.open('Something went wrong.', 'Go Home Page', {duration: 3000})
+            .afterDismissed()
+            .subscribe(_ => {
+              this.router.navigate(['/'])
+          })
+        }
+      })
     )
   }
 
