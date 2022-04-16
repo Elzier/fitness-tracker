@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs'
 import { UIService } from '../../shared/services/ui.service'
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-login-page',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })

@@ -1,19 +1,16 @@
 import { Injectable } from '@angular/core'
 import { Exercise } from '../models'
-import { concat, map, of, Subject, Subscription, throwError } from 'rxjs'
-import { finalize } from 'rxjs/operators'
+import { map, Subject, Subscription } from 'rxjs'
 import { AngularFirestore } from '@angular/fire/compat/firestore'
 import firebase from 'firebase/compat/app'
 import Timestamp = firebase.firestore.Timestamp
 import { UIService } from './ui.service'
-import { MatSnackBar } from '@angular/material/snack-bar'
-import { Router } from '@angular/router'
 
-@Injectable({providedIn: 'root'})
+@Injectable()
 
 export class TrainingService {
   currentExerciseChanged = new Subject<Exercise | null>()
-  availableExercisesChanged = new Subject<Exercise[]>()
+  availableExercisesChanged = new Subject<Exercise[] | null>()
   finishedExercisesChanged = new Subject<Exercise[]>()
   private runningExercise: Exercise | null = null
   private availableExercises: Exercise[] = []
@@ -21,9 +18,7 @@ export class TrainingService {
 
   constructor(
     private db: AngularFirestore,
-    private uiService: UIService,
-    private _snack: MatSnackBar,
-    private router: Router
+    private uiService: UIService
   ) {}
 
   fetchAvailableExercises() {
@@ -46,12 +41,13 @@ export class TrainingService {
           this.uiService.hideLoader()
         },
         error: () => {
+          this.availableExercisesChanged.next(null)
           this.uiService.hideLoader()
-          this._snack.open('Something went wrong.', 'Go Home Page', {duration: 3000})
-            .afterDismissed()
-            .subscribe(_ => {
-              this.router.navigate(['/'])
-          })
+          this.uiService.showSnack(
+            'Fetching exercises failed, try again later.',
+            'OK',
+            {duration: 3000}
+          )
         }
       })
     )

@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs'
 import { UIService } from '../../shared/services/ui.service'
 
 @Component({
-  selector: 'app-signup',
+  selector: 'app-signup-page',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss']
 })

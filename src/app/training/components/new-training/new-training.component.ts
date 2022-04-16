@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
-import { TrainingService } from '../../shared/services/training.service'
+import { TrainingService } from '../../../shared/services/training.service'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
-import { Exercise } from '../../shared/models'
+import { Exercise } from '../../../shared/models'
 import { Subscription } from 'rxjs'
-import { UIService } from '../../shared/services/ui.service'
+import { UIService } from '../../../shared/services/ui.service'
 
 @Component({
   selector: 'app-new-training',
@@ -13,7 +13,7 @@ import { UIService } from '../../shared/services/ui.service'
 export class NewTrainingComponent implements OnInit, OnDestroy {
   private exercisesChangedSub$!: Subscription
   private loaderSub$!: Subscription
-  exercises: Exercise[] = []
+  exercises: Exercise[] | null = null
   form!: FormGroup
   showLoader = false
 
@@ -30,9 +30,8 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
     this.loaderSub$ = this.uiService.loaderStateChanged.subscribe(showOrNot => this.showLoader = showOrNot)
 
     this.exercisesChangedSub$ = this.trainingService.availableExercisesChanged
-      .subscribe((exercises: Exercise[]) => this.exercises = exercises)
-
-    this.trainingService.fetchAvailableExercises()
+      .subscribe(exercises => this.exercises = exercises)
+    this.loadAvailableExercises()
   }
 
   onStartTraining() {
@@ -42,5 +41,9 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.exercisesChangedSub$) this.exercisesChangedSub$.unsubscribe()
     if (this.loaderSub$) this.loaderSub$.unsubscribe()
+  }
+
+  loadAvailableExercises() {
+    this.trainingService.fetchAvailableExercises()
   }
 }

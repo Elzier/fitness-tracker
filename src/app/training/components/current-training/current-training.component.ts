@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { StopTrainingComponent } from './stop-training.component'
-import { TrainingService } from '../../shared/services/training.service'
-import { Exercise } from '../../shared/models'
+import { TrainingService } from '../../../shared/services/training.service'
+import { Exercise } from '../../../shared/models'
 
 @Component({
   selector: 'app-current-training',
