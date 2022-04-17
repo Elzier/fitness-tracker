@@ -13,7 +13,6 @@ import { HeaderComponent } from './shared/components/navigation/header/header.co
 import { AngularFireModule } from '@angular/fire/compat'
 import { AuthModule } from './auth/auth.module'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { TrainingModule } from './training/training.module'
 
 
 @NgModule({
@@ -25,7 +24,6 @@ import { TrainingModule } from './training/training.module'
   ],
   imports: [
     AuthModule,
-    TrainingModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,

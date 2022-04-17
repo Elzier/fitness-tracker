@@ -6,7 +6,7 @@ import firebase from 'firebase/compat/app'
 import Timestamp = firebase.firestore.Timestamp
 import { UIService } from './ui.service'
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 
 export class TrainingService {
   currentExerciseChanged = new Subject<Exercise | null>()
