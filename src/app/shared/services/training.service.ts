@@ -4,31 +4,52 @@ import { map, Subject, Subscription } from 'rxjs'
 import { AngularFirestore } from '@angular/fire/compat/firestore'
 import firebase from 'firebase/compat/app'
 import Timestamp = firebase.firestore.Timestamp
+import { UIService } from './ui.service'
 
 @Injectable({providedIn: 'root'})
 
 export class TrainingService {
   currentExerciseChanged = new Subject<Exercise | null>()
-  availableExercisesChanged = new Subject<Exercise[]>()
+  availableExercisesChanged = new Subject<Exercise[] | null>()
   finishedExercisesChanged = new Subject<Exercise[]>()
   private runningExercise: Exercise | null = null
   private availableExercises: Exercise[] = []
   private trainingsSubs$: Subscription[] = []
 
-  constructor(private db: AngularFirestore) {}
+  constructor(
+    private db: AngularFirestore,
+    private uiService: UIService
+  ) {}
 
   fetchAvailableExercises() {
+    this.uiService.showLoader()
+
     this.trainingsSubs$.push(
       this.db.collection<Exercise>('availableExercises').snapshotChanges()
-      .pipe(map(documentArray => {
-        return documentArray.map(document => ({
-          id: document.payload.doc.id,
-          ...<Object>document.payload.doc.data()
-        } as Exercise))
-      })).subscribe((exercises: Exercise[]) => {
-        this.availableExercises = exercises
-        this.availableExercisesChanged.next(exercises)
+      .pipe(
+        map(documentArray => {
+          return documentArray.map(document => ({
+            id: document.payload.doc.id,
+            ...<Object>document.payload.doc.data()
+          } as Exercise))
         })
+      )
+      .subscribe({
+        next: (exercises: Exercise[]) => {
+          this.availableExercises = exercises
+          this.availableExercisesChanged.next(exercises)
+          this.uiService.hideLoader()
+        },
+        error: () => {
+          this.availableExercisesChanged.next(null)
+          this.uiService.hideLoader()
+          this.uiService.showSnack(
+            'Fetching exercises failed, try again later.',
+            'OK',
+            {duration: 3000}
+          )
+        }
+      })
     )
   }
 

@@ -15,6 +15,9 @@
       <input type="password" matInput formControlName="password" placeholder="Your  password">
       <mat-error *ngIf="password?.hasError('required')">Field must not be empty.</mat-error>
     </mat-form-field>
-    <button type="submit" [disabled]="form.invalid" mat-raised-button color="primary">Submit</button>
+    <button  *ngIf="!showLoader; else spinner" type="submit" [disabled]="form.invalid" mat-raised-button color="primary">Submit</button>
+    <ng-template #spinner>
+      <mat-spinner></mat-spinner>
+    </ng-template>
   </form>
 </section>

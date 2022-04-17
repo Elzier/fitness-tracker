@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { MatTableDataSource } from '@angular/material/table'
-import { Exercise } from '../../shared/models'
-import { TrainingService } from '../../shared/services/training.service'
+import { Exercise } from '../../../shared/models'
+import { TrainingService } from '../../../shared/services/training.service'
 import { MatSort } from '@angular/material/sort'
 import { MatPaginator } from '@angular/material/paginator'
 import { Subscription } from 'rxjs'
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs'
 export class PastTrainingsComponent implements OnInit, AfterViewInit, OnDestroy {
   displayedColumns = ['name', 'duration', 'calories', 'date', 'state']
   dataSource = new MatTableDataSource<Exercise>()
-  lastExercisesChangedSub!: Subscription
+  private lastExercisesChangedSub!: Subscription
 
   @ViewChild(MatSort) sort!: MatSort
   @ViewChild(MatPaginator) paginator!: MatPaginator
