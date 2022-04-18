@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { AuthService } from '../../shared/services/auth.service'
-import { map, Observable, Subscription, tap } from 'rxjs'
+import { Observable} from 'rxjs'
 import { UIService } from '../../shared/services/ui.service'
 import { Store } from '@ngrx/store'
 import * as fromRoot from '../../store/app.reducer'

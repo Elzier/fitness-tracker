@@ -11,6 +11,7 @@ import { FirebaseError } from 'firebase/app'
 import { UIService } from './ui.service'
 import { Store } from '@ngrx/store'
 import * as fromRoot from '../../store/app.reducer'
+import * as UI from '../../store/ui/ui.actions'
 
 @Injectable()
 export class AuthService {
@@ -45,7 +46,7 @@ export class AuthService {
   async login(authData: AuthData) {
     try {
       // this.uiService.showLoader()
-      this.store.dispatch({type: 'START_LOADING'})
+      this.store.dispatch(new UI.StartLoading())
       await this.fbAuth.signInWithEmailAndPassword(authData.email, authData.password)
     }
     catch (error) {
@@ -63,15 +64,13 @@ export class AuthService {
       }
     }
     finally {
-      // this.uiService.hideLoader()
-      this.store.dispatch({type: 'STOP_LOADING'})
+      this.store.dispatch(new UI.StopLoading())
     }
   }
 
   async registerUser(authData: AuthData) {
     try {
-      // this.uiService.showLoader()
-      this.store.dispatch({type: 'START_LOADING'})
+      this.store.dispatch(new UI.StartLoading())
       await this.fbAuth.createUserWithEmailAndPassword(authData.email, authData.password)
     }
     catch (err) {
@@ -94,8 +93,7 @@ export class AuthService {
       }
     }
     finally {
-      // this.uiService.hideLoader()
-      this.store.dispatch({type: 'STOP_LOADING'})
+      this.store.dispatch(new UI.StopLoading())
     }
   }
 
