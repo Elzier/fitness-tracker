@@ -9,6 +9,8 @@ import User = firebase.User
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { FirebaseError } from 'firebase/app'
 import { UIService } from './ui.service'
+import { Store } from '@ngrx/store'
+import * as fromRoot from '../../store/app.reducer'
 
 @Injectable()
 export class AuthService {
@@ -20,7 +22,8 @@ export class AuthService {
     private fbAuth: AngularFireAuth,
     private trainingService: TrainingService,
     private _snack: MatSnackBar,
-    private uiService: UIService
+    private uiService: UIService,
+    private store: Store<fromRoot.State>
   ) {}
 
   initAuthListener() {
@@ -41,7 +44,8 @@ export class AuthService {
 
   async login(authData: AuthData) {
     try {
-      this.uiService.showLoader()
+      // this.uiService.showLoader()
+      this.store.dispatch({type: 'START_LOADING'})
       await this.fbAuth.signInWithEmailAndPassword(authData.email, authData.password)
     }
     catch (error) {
@@ -59,13 +63,15 @@ export class AuthService {
       }
     }
     finally {
-      this.uiService.hideLoader()
+      // this.uiService.hideLoader()
+      this.store.dispatch({type: 'STOP_LOADING'})
     }
   }
 
   async registerUser(authData: AuthData) {
     try {
-      this.uiService.showLoader()
+      // this.uiService.showLoader()
+      this.store.dispatch({type: 'START_LOADING'})
       await this.fbAuth.createUserWithEmailAndPassword(authData.email, authData.password)
     }
     catch (err) {
@@ -88,7 +94,8 @@ export class AuthService {
       }
     }
     finally {
-      this.uiService.hideLoader()
+      // this.uiService.hideLoader()
+      this.store.dispatch({type: 'STOP_LOADING'})
     }
   }
 
