@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { AuthService } from '../../shared/services/auth.service'
 import { Observable} from 'rxjs'
@@ -14,7 +14,6 @@ import * as fromRoot from '../../store/app.reducer'
 export class LoginComponent implements OnInit {
   isLoading$!: Observable<boolean>
   form!: FormGroup
-  showLoader = false
 
   constructor(
     private fb: FormBuilder,

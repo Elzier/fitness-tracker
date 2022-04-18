@@ -2,8 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core'
 import { TrainingService } from '../../../shared/services/training.service'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { Exercise } from '../../../shared/models'
-import { Subscription } from 'rxjs'
+import { Observable, Subscription } from 'rxjs'
 import { UIService } from '../../../shared/services/ui.service'
+import { Store } from '@ngrx/store'
+import * as fromRoot from '../../../store/app.reducer'
 
 @Component({
   selector: 'app-new-training',
@@ -12,23 +14,22 @@ import { UIService } from '../../../shared/services/ui.service'
 })
 export class NewTrainingComponent implements OnInit, OnDestroy {
   private exercisesChangedSub$!: Subscription
-  private loaderSub$!: Subscription
   exercises: Exercise[] | null = null
   form!: FormGroup
-  showLoader = false
+  isLoading$!: Observable<boolean>
 
   constructor(
     private trainingService: TrainingService,
     private fb: FormBuilder,
-    private uiService: UIService
+    private uiService: UIService,
+    private store: Store<fromRoot.State>
   ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
       exerciseId: [null, Validators.required]
     })
-    this.loaderSub$ = this.uiService.loaderStateChanged.subscribe(showOrNot => this.showLoader = showOrNot)
-
+    this.isLoading$ = this.store.select<boolean>(fromRoot.isLoading)
     this.exercisesChangedSub$ = this.trainingService.availableExercisesChanged
       .subscribe(exercises => this.exercises = exercises)
     this.loadAvailableExercises()
@@ -40,7 +41,6 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.exercisesChangedSub$) this.exercisesChangedSub$.unsubscribe()
-    if (this.loaderSub$) this.loaderSub$.unsubscribe()
   }
 
   loadAvailableExercises() {

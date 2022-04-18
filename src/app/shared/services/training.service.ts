@@ -5,6 +5,9 @@ import { AngularFirestore } from '@angular/fire/compat/firestore'
 import firebase from 'firebase/compat/app'
 import Timestamp = firebase.firestore.Timestamp
 import { UIService } from './ui.service'
+import * as fromRoot from '../../store/app.reducer'
+import * as UI from '../../store/ui/ui.actions'
+import { Store } from '@ngrx/store'
 
 @Injectable({providedIn: 'root'})
 
@@ -18,12 +21,12 @@ export class TrainingService {
 
   constructor(
     private db: AngularFirestore,
-    private uiService: UIService
+    private uiService: UIService,
+    private store: Store<fromRoot.State>
   ) {}
 
   fetchAvailableExercises() {
-    this.uiService.showLoader()
-
+    this.store.dispatch(new UI.StartLoading())
     this.trainingsSubs$.push(
       this.db.collection<Exercise>('availableExercises').snapshotChanges()
       .pipe(
@@ -38,11 +41,11 @@ export class TrainingService {
         next: (exercises: Exercise[]) => {
           this.availableExercises = exercises
           this.availableExercisesChanged.next(exercises)
-          this.uiService.hideLoader()
+          this.store.dispatch(new UI.StopLoading())
         },
         error: () => {
           this.availableExercisesChanged.next(null)
-          this.uiService.hideLoader()
+          this.store.dispatch(new UI.StopLoading())
           this.uiService.showSnack(
             'Fetching exercises failed, try again later.',
             'OK',

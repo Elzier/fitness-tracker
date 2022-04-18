@@ -45,7 +45,6 @@ export class AuthService {
 
   async login(authData: AuthData) {
     try {
-      // this.uiService.showLoader()
       this.store.dispatch(new UI.StartLoading())
       await this.fbAuth.signInWithEmailAndPassword(authData.email, authData.password)
     }
