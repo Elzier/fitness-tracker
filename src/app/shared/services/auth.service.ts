@@ -1,5 +1,4 @@
 import { AuthData } from '../models'
-import { Subject } from 'rxjs'
 import { Router } from '@angular/router'
 import { Injectable } from '@angular/core'
 import { AngularFireAuth } from '@angular/fire/compat/auth'
@@ -12,12 +11,10 @@ import { UIService } from './ui.service'
 import { Store } from '@ngrx/store'
 import * as fromRoot from '../../store/app.reducer'
 import * as UI from '../../store/ui/ui.actions'
+import * as auth from '../../store/auth/auth.actions'
 
 @Injectable()
 export class AuthService {
-  isAuthenticated = false
-  authChange = new Subject<boolean>()
-
   constructor(
     private router: Router,
     private fbAuth: AngularFireAuth,
@@ -30,14 +27,12 @@ export class AuthService {
   initAuthListener() {
     this.fbAuth.authState.subscribe((user: User | null) => {
       if (user) {
-        this.isAuthenticated = true
-        this.authChange.next(true)
+        this.store.dispatch(new auth.IsAuthenticated())
         this.router.navigate(['/training'])
       }
       else {
         this.trainingService.cancelAllSubs()
-        this.isAuthenticated = false
-        this.authChange.next(false)
+        this.store.dispatch(new auth.IsUnAuthenticated())
         this.router.navigate(['/login'])
       }
     })
@@ -94,10 +89,6 @@ export class AuthService {
     finally {
       this.store.dispatch(new UI.StopLoading())
     }
-  }
-
-  isAuth() {
-    return this.isAuthenticated
   }
 
   async logout() {

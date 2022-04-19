@@ -1,7 +1,7 @@
 import { Action } from '@ngrx/store'
 
-export const START_LOADING = '[UI] Start Loading'
-export const STOP_LOADING = '[UI] Stop Loading'
+export const START_LOADING = '[UI] Start loading'
+export const STOP_LOADING = '[UI] Stop loading'
 
 export class StartLoading implements Action {
   readonly type = START_LOADING
