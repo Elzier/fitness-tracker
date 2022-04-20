@@ -1,29 +1,28 @@
 import { Injectable } from '@angular/core'
 import { Exercise } from '../models'
-import { map, Subject, Subscription } from 'rxjs'
+import { map, Subscription, take } from 'rxjs'
 import { AngularFirestore } from '@angular/fire/compat/firestore'
 import firebase from 'firebase/compat/app'
 import Timestamp = firebase.firestore.Timestamp
 import { UIService } from './ui.service'
+import * as fromTraining from '../../store/training/training.reducer'
+import * as UI from '../../store/ui/ui.actions'
+import * as training from '../../store/training/training.actions'
+import { Store } from '@ngrx/store'
 
 @Injectable({providedIn: 'root'})
 
 export class TrainingService {
-  currentExerciseChanged = new Subject<Exercise | null>()
-  availableExercisesChanged = new Subject<Exercise[] | null>()
-  finishedExercisesChanged = new Subject<Exercise[]>()
-  private runningExercise: Exercise | null = null
-  private availableExercises: Exercise[] = []
   private trainingsSubs$: Subscription[] = []
 
   constructor(
     private db: AngularFirestore,
-    private uiService: UIService
+    private uiService: UIService,
+    private store: Store<fromTraining.State>
   ) {}
 
   fetchAvailableExercises() {
-    this.uiService.showLoader()
-
+    this.store.dispatch(new UI.StartLoading())
     this.trainingsSubs$.push(
       this.db.collection<Exercise>('availableExercises').snapshotChanges()
       .pipe(
@@ -36,13 +35,12 @@ export class TrainingService {
       )
       .subscribe({
         next: (exercises: Exercise[]) => {
-          this.availableExercises = exercises
-          this.availableExercisesChanged.next(exercises)
-          this.uiService.hideLoader()
+          this.store.dispatch(new training.SetAvailableExercises(exercises))
+          this.store.dispatch(new UI.StopLoading())
         },
         error: () => {
-          this.availableExercisesChanged.next(null)
-          this.uiService.hideLoader()
+          this.store.dispatch(new training.SetAvailableExercises([]))
+          this.store.dispatch(new UI.StopLoading())
           this.uiService.showSnack(
             'Fetching exercises failed, try again later.',
             'OK',
@@ -54,49 +52,42 @@ export class TrainingService {
   }
 
   selectExercise(selectedExId: string) {
-    this.runningExercise = this.availableExercises.find(ex => ex.id === selectedExId) || null
-    if (this.runningExercise) {
-      this.currentExerciseChanged.next({...this.runningExercise})
-    }
-  }
-
-  getRunningExercise(): Exercise | null {
-    if (this.runningExercise) {
-      return {...this.runningExercise}
-    }
-    return null
+    this.store.dispatch(new training.StartTraining(selectedExId))
   }
 
   completeExercise() {
-    if (this.runningExercise) {
-      this.postFinishedExerciseToDb({
-        ...this.runningExercise,
-        date: Timestamp.now(),
-        state: 'completed'
-      })
-    }
-    this.runningExercise = null
-    this.currentExerciseChanged.next(null)
+    this.store.select(fromTraining.getActiveExercise).pipe(take(1)).subscribe(exercise => {
+      if (exercise) {
+        this.postFinishedExerciseToDb({
+          ...exercise,
+          date: Timestamp.now(),
+          state: 'completed'
+        })
+      }
+    })
+    this.store.dispatch(new training.StopTraining())
   }
 
   cancelExercise(progress: number) {
-    if (this.runningExercise) {
-      this.postFinishedExerciseToDb({
-        ...this.runningExercise,
-        date: Timestamp.now(),
-        state: 'cancelled',
-        duration: +((this.runningExercise.duration / 100 * progress).toFixed(2)),
-        calories: +((this.runningExercise.calories / 100 * progress).toFixed(2))
-      })
-    }
-    this.runningExercise = null
-    this.currentExerciseChanged.next(null)
+    this.store.select(fromTraining.getActiveExercise).pipe(take(1)).subscribe(exercise => {
+      if (exercise) {
+        this.postFinishedExerciseToDb({
+          ...exercise,
+          date: Timestamp.now(),
+          state: 'cancelled',
+          duration: +((exercise.duration / 100 * progress).toFixed(2)),
+          calories: +((exercise.calories / 100 * progress).toFixed(2))
+        })
+      }
+    })
+    this.store.dispatch(new training.StopTraining())
   }
 
   fetchFinishedExercises() {
-    this.trainingsSubs$.push(this.db.collection<Exercise>('finishedExercises').valueChanges()
+    this.trainingsSubs$.push(this.db.collection<Exercise>('finishedExercises')
+      .valueChanges()
       .subscribe((exercises: Exercise[]) => {
-        this.finishedExercisesChanged.next(exercises)
+        this.store.dispatch(new training.SetFinishedExercises(exercises))
     }))
   }
 

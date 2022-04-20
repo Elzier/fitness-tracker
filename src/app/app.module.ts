@@ -13,6 +13,8 @@ import { HeaderComponent } from './shared/components/navigation/header/header.co
 import { AngularFireModule } from '@angular/fire/compat'
 import { AuthModule } from './auth/auth.module'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { StoreModule } from '@ngrx/store'
+import { reducers } from './store/app.reducer'
 
 
 @NgModule({
@@ -31,6 +33,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
     FormsModule,
     ReactiveFormsModule,
     FlexLayoutModule,
+    StoreModule.forRoot(reducers),
     AngularFireModule.initializeApp(environment.firebase),
   ],
   bootstrap: [AppComponent]
