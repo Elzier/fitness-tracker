@@ -1,4 +1,4 @@
-import { IS_AUTHENTICATED, IS_UNAUTHENTICATED, authAction } from './auth.actions'
+import { IS_AUTHENTICATED, IS_UNAUTHENTICATED } from './auth.actions'
 import { Action } from '@ngrx/store'
 
 export interface State {
