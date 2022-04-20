@@ -35,6 +35,7 @@ export class AuthService {
         this.store.dispatch(new auth.IsUnAuthenticated())
         this.router.navigate(['/login'])
       }
+      this.store.dispatch(new UI.AuthChecked())
     })
   }
 

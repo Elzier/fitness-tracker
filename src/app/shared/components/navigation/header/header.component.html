@@ -4,7 +4,7 @@
   </button>
   <div><a routerLink="/">LOGO</a></div>
   <nav class="header__nav" fxFlex fxLayout fxLayoutAlign="flex-end" fxHide.xs>
-    <ul class="header__nav__items" fxLayout fxLayoutGap="12px">
+    <ul class="header__nav__items" *ngIf="showNav | async" fxLayout fxLayoutGap="12px">
       <li *ngIf="!(isAuthenticated$ | async)" class="nav-item"><a routerLink="/signup">Signup</a></li>
       <li *ngIf="!(isAuthenticated$ | async)" class="nav-item"><a routerLink="/login">Login</a></li>
       <li *ngIf="isAuthenticated$ | async" class="nav-item"><a routerLink="/training">Training</a></li>
