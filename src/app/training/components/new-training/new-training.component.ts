@@ -1,28 +1,26 @@
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { TrainingService } from '../../../shared/services/training.service'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { Exercise } from '../../../shared/models'
-import { Observable, Subscription } from 'rxjs'
-import { UIService } from '../../../shared/services/ui.service'
+import { Observable } from 'rxjs'
 import { Store } from '@ngrx/store'
 import * as fromRoot from '../../../store/app.reducer'
+import * as fromTraining from '../../../store/training/training.reducer'
 
 @Component({
   selector: 'app-new-training',
   templateUrl: './new-training.component.html',
   styleUrls: ['./new-training.component.scss']
 })
-export class NewTrainingComponent implements OnInit, OnDestroy {
-  private exercisesChangedSub$!: Subscription
-  exercises: Exercise[] | null = null
+export class NewTrainingComponent implements OnInit {
+  availableExercises$!: Observable<Exercise[]>
   form!: FormGroup
   isLoading$!: Observable<boolean>
 
   constructor(
     private trainingService: TrainingService,
     private fb: FormBuilder,
-    private uiService: UIService,
-    private store: Store<fromRoot.State>
+    private store: Store<fromTraining.State>
   ) {}
 
   ngOnInit(): void {
@@ -30,17 +28,12 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
       exerciseId: [null, Validators.required]
     })
     this.isLoading$ = this.store.select<boolean>(fromRoot.isLoading)
-    this.exercisesChangedSub$ = this.trainingService.availableExercisesChanged
-      .subscribe(exercises => this.exercises = exercises)
+    this.availableExercises$ = this.store.select(fromTraining.getAvailableExercises)
     this.loadAvailableExercises()
   }
 
   onStartTraining() {
     this.trainingService.selectExercise(this.form.value.exerciseId)
-  }
-
-  ngOnDestroy() {
-    if (this.exercisesChangedSub$) this.exercisesChangedSub$.unsubscribe()
   }
 
   loadAvailableExercises() {
